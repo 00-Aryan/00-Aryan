@@ -1,141 +1,106 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&pause=1000&color=58A6FF&center=true&vCenter=true&width=700&lines=Hey%2C+I'm+Aryan+Kumar+%F0%9F%91%8B;Data+Science+%7C+ML+%7C+NLP;Building+real+things%2C+the+hard+way." alt="Typing SVG" />
+# Aryan Kumar
 
-<br/>
+**AI Engineer (RAG & agentic systems) · Final-year B.S. Data Science & Applications, IIT Madras**
+
+I build LLM systems and then measure where they break.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/aryan-kumar-1969b819b/)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/00-Aryan)
-[![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/Aryanku74262338)
+[![Portfolio](https://img.shields.io/badge/Portfolio-111827?style=for-the-badge&logo=vercel&logoColor=white)](https://aryan-ds-portfolio.vercel.app/)
 [![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:22f2000697@ds.study.iitm.ac.in)
+[![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/Aryanku74262338)
 
 </div>
 
 ---
 
-## 🗺️ The Story So Far
+## 🧭 About
 
-I'm a final-year **B.S. Data Science & Applications** student at **IIT Madras** (graduating Sept 2026), and I'll be honest with you — I didn't start with clean code and deep fundamentals.
+I started with copy-paste and "it works, so it's fine." Then I chose to learn *why* things work, and this GitHub is the record of that shift.
 
-I started with shortcuts. Copy-paste. "It works, so it's fine."
+Right now I'm focused on one problem space: **RAG and agentic AI for enterprise documents**. My lead project, TenderIQ, comes from watching my own family struggle through a government e-marketplace (GeM) tender.
 
-Then I made a deliberate choice: **understand the *why*, not just the *what*.**
-
-That shift is what this GitHub documents. Not a perfect portfolio — a real learning arc. Every project here represents a problem I sat with, reasoned through, and built with increasing independence. The commits aren't just code; they're proof of work.
-
-Right now I'm actively targeting **Data Science, ML Engineering, and NLP roles** — and building the depth to back it up in interviews.
+Looking for **AI / ML engineering roles and internships** (RAG, LLM pipelines, agentic systems). Open to relocation or remote.
 
 ---
 
-## 🚀 Featured Projects
+## 🔨 Lead Project (In Progress)
 
-### 🩺 [Physician Notetaker](https://github.com/00-Aryan/NLP_Physician-notetaker)
-> *Turning unstructured clinical speech into structured medical notes using NLP*
+### 📄 [TenderIQ](https://github.com/00-Aryan/tenderiq): RAG assistant for GeM tender PDFs
 
-A full NLP pipeline that processes physician-patient conversations and extracts structured clinical entities — symptoms, diagnoses, medications — using **spaCy**, **scispaCy**, and **DistilBERT**.
+> MSMEs lose winnable government bids to preventable process mistakes: a missed EMD clause, a wrong document, a deadline buried in a table. TenderIQ lets a bidder ask questions about a tender and get cited answers.
 
-- Fine-tuned domain-specific NER on medical text
-- Handled the messy reality of clinical language (abbreviations, jargon, incomplete sentences)
-- Stack: `Python` · `spaCy` · `scispaCy` · `HuggingFace Transformers` · `DistilBERT`
+**What's implemented**
+- **Ingestion:** FastAPI upload returns `202`, a background task parses the PDF with `pymupdf4llm` (chosen over PyMuPDF after testing on real, bilingual GeM tenders), and the client polls a status endpoint.
+- **Retrieval:** header-aware and recursive chunking into ChromaDB, hybrid BM25 + vector search (LangChain `EnsembleRetriever`), LLM multi-query expansion, and content-hash dedup.
+- **Serving:** Streamlit UI showing page-cited answers, per-stage latency and token count; pytest suite with no live LLM calls.
 
----
+**A bug worth telling you about:** the query *"deadline"* failed to find the chunk containing *"Bid End Date/Time"*. Root cause was three compounding issues: BM25 vocabulary mismatch, a 1,200-char mixed-topic chunk diluting its embedding, and two retrievers making the same mistake. Fixed with block-level chunking that preserves table structure and a query-expansion layer that maps everyday words to procurement terms.
 
-### 🛒 [Engage2Value: From Clicks to Conversions](https://github.com/00-Aryan/Engage2Value-From-Clicks-to-Conversions)
-> *Predicting purchase intent from e-commerce session behavior — ~116K records*
+**Evaluation (RAGAS, first run, 8 cases, so treat as directional):** context precision 1.00 · context recall 1.00 · answer relevance 0.84 · **faithfulness 0.61**. Faithfulness is the weak number, and it's the one I'm working on next.
 
-Session-level purchase prediction on real e-commerce data. Framed as a classification problem: given a user's browsing session, will they buy?
+**Not built yet:** eligibility matching against a company profile, conversation memory, OCR fallback, auth, deployment.
 
-- Full ML pipeline: feature engineering → model selection → evaluation
-- Dealt with class imbalance, leakage prevention, and threshold tuning
-- Stack: `Python` · `pandas` · `scikit-learn` · `XGBoost` · `matplotlib`
+`Python` · `FastAPI` · `LangChain` · `ChromaDB` · `pymupdf4llm` · `Gemini` · `Streamlit` · `Pydantic` · `RAGAS` · `pytest`
 
 ---
 
-### 🎬 [Movie Recommendation System](https://github.com/00-Aryan/00-Aryan)
-> *Collaborative filtering on the MovieLens dataset using matrix factorization*
+## 🚀 Other Projects
 
-Built a user-item recommendation engine from scratch to understand *how* recommender systems actually work — not just call a library.
+### 🛒 [Engage2Value](https://github.com/00-Aryan/Engage2Value-From-Clicks-to-Conversions): predicting purchase value from sessions
+Kaggle competition on ~116K e-commerce sessions where most sessions buy nothing, so a plain regressor collapses toward zero.
+- Kaggle submission: XGBoost + LightGBM blend with target encoding, **R² 0.632**.
+- Rebuilt as a **two-stage hurdle model** (will they buy → how much): on a local holdout it reached RMSLE 0.84 vs 1.88 for a predict-zero baseline.
+- Caught a micros-scale target bug and used a leakage-safe split.
 
-- Implemented SVD-based collaborative filtering
-- Explored the cold-start problem and rating sparsity
-- Stack: `Python` · `pandas` · `scikit-learn` · `Surprise`
+`Python` · `pandas` · `scikit-learn` · `XGBoost` · `LightGBM`
 
----
+### 💬 [Feedback NLP](https://github.com/00-Aryan/feedback-nlp): sentiment API
+3-class sentiment classifier on SBERT embeddings + Logistic Regression, served through FastAPI.
 
-### ⚙️ [Job Digest Automation](https://github.com/00-Aryan/Job-Digest-Automation-)
-> *A personal AI agent that scouts and delivers daily job leads to my inbox*
+`Python` · `Sentence-BERT` · `scikit-learn` · `FastAPI`
 
-Because job searching manually every day is a solved problem. Built a fully automated pipeline: scrape → filter → score with Gemini API → email digest via Gmail SMTP → runs daily on GitHub Actions.
+### 🩺 [Physician Notetaker](https://github.com/00-Aryan/NLP_Physician-notetaker): clinical NLP
+Turns physician-patient conversations into structured notes: symptoms, diagnoses, medications. Domain NER with scispaCy plus DistilBERT, in a modular 6-class architecture.
 
-- Stack: `Python` · `Apify` · `Gemini API` · `GitHub Actions` · `Gmail SMTP`
+`Python` · `spaCy` · `scispaCy` · `HuggingFace` · `DistilBERT`
 
----
+### 🏦 [Bank Term Deposit Classification](https://github.com/00-Aryan/Binary-Classification-with-a-Bank-Dataset)
+Stacking ensemble tuned with Optuna. The interesting part: finding and fixing data leakage with a chronological split.
 
-## 🛠️ Tech Stack
+### 🤖 [Content Creation Automation](https://github.com/00-Aryan/Content-Creation-Automation) · [live](https://content-creation-automation.onrender.com)
+Multi-stage agentic content pipeline on the Gemini API with Pydantic v2 schemas and a 300+ test suite. **Agent-assisted build:** I wrote the plan and specs (`AGENTS.md`), and coding agents implemented them. I'm reworking it now to understand and simplify the pipeline end to end.
 
-<div align="center">
-
-**Languages & Core**
-
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![SQL](https://img.shields.io/badge/SQL-4479A1?style=flat-square&logo=postgresql&logoColor=white)
-
-**ML / Data**
-
-![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
-![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)
-![XGBoost](https://img.shields.io/badge/XGBoost-EC6D22?style=flat-square)
-
-**NLP**
-
-![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
-![spaCy](https://img.shields.io/badge/spaCy-09A3D5?style=flat-square)
-
-**Web / Automation**
-
-![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
-
-</div>
+### 📊 More
+- [ProductivOS](https://github.com/00-Aryan/Daily-Tracker) · [live](https://daily-tracker-seven-phi.vercel.app): full-stack tracker (React, FastAPI, Supabase with row-level security) that I use to log my own applications.
+- [Olist E-commerce Dashboard](https://github.com/00-Aryan/data-visualisation-olist): multi-page Plotly Dash app on 11 tables. Finding: orders delivered after 14 days see sharply lower review scores.
+- [Movie Recommender](https://github.com/00-Aryan/Movie_Recommender-System-): SVD collaborative filtering on MovieLens, built to understand cold-start and sparsity.
 
 ---
 
-## 📈 GitHub Stats
+## 🛠️ Stack (honest tiers)
 
-<div align="center">
-
-<img height="160" src="https://github-readme-stats.vercel.app/api?username=00-Aryan&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" />
-<img height="160" src="https://github-readme-stats.vercel.app/api/top-langs/?username=00-Aryan&layout=compact&theme=tokyonight&hide_border=true" />
-
-</div>
-
----
-
-## 🌱 What I'm Working On Now
-
-- Deepening **SQL** fluency (it's my highest-priority gap, and I know it)
-- Strengthening **ML fundamentals** — understanding models at the mechanism level, not just API level
-- Exploring **LangChain / LlamaIndex** and **vector databases** (FAISS, Pinecone)
-- Preparing to defend every line of my projects in technical interviews
+| | |
+|---|---|
+| **Daily use** | Python · pandas · NumPy · scikit-learn · XGBoost / LightGBM · FastAPI · LangChain · ChromaDB · Pydantic · Streamlit · pytest · Git / GitHub Actions |
+| **Working knowledge** | SQL · spaCy / HuggingFace Transformers · Flask · Plotly Dash · Gemini API · RAGAS |
+| **Learning now** | LangGraph · production LLM engineering (cost, latency, scale) · retrieval evaluation |
 
 ---
 
-## 🤝 Open To
+## 🌱 Now
 
-- 💼 **Entry-level / Internship roles** in Data Science, ML Engineering, NLP
-- 🛠️ **Collaborations** on beginner-to-intermediate ML projects
-- 📬 **Conversations** — if you're working on something interesting, reach out
+- Raising TenderIQ's faithfulness score and adding eligibility matching
+- Learning LangGraph and production LLM engineering (token cost, latency, scaling)
+- Strengthening SQL
 
 ---
 
 <div align="center">
 
-*"Not a contest-rank holder or an expert yet.*
-*But I show up, I reason through it, and I improve — every single day."*
+*Not an expert yet. I show up, reason through it, and ship.*
 
-<br/>
-
-⭐ **If any of my projects helped or inspired you, a star goes a long way.**
+📬 **If you're building with RAG or agents, I'd like to hear about it.**
 
 </div>
